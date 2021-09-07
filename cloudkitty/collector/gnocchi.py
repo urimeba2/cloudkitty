@@ -64,7 +64,7 @@ collector_gnocchi_opts = [
     ),
     cfg.StrOpt(
         'region_name',
-        default='RegionOne',
+        default='Texas',
         help='Region Name',
     ),
     cfg.IntOpt(
