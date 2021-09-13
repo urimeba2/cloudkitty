@@ -39,6 +39,8 @@ cfg.CONF.register_opts(fetcher_keystone_opts, FETCHER_KEYSTONE_OPTS)
 
 CONF = cfg.CONF
 
+from oslo_log import log as logging
+LOG = logging.getLogger(__name__)
 
 class KeystoneFetcher(fetcher.BaseFetcher):
     """Keystone tenants fetcher."""
@@ -74,9 +76,19 @@ class KeystoneFetcher(fetcher.BaseFetcher):
         tenant_list = getattr(self.admin_ks, tenants_attr).list()
         my_user_id = self.session.get_user_id()
         for tenant in tenant_list[:]:
+            LOG.info('Tenant: {t}'.format(
+                t=tenant
+            ))
             roles = getattr(self.admin_ks.roles, role_func)(
                 **{'user': my_user_id,
                    tenant_attr: tenant})
+            LOG.info('Roles of Tenant "{t}": {r}'.format(
+                t=tenant,
+                r=roles
+            ))
             if 'rating' not in [role.name for role in roles]:
                 tenant_list.remove(tenant)
+                LOG.info('Tenant "{t}" was removed'.format(
+                    t=tenant
+                ))
         return [tenant.id for tenant in tenant_list]
